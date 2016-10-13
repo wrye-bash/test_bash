@@ -1,0 +1,8 @@
+# binaries
+*.pyc
+*.pyo
+
+# IDE files
+.idea/
+# if a symlink
+.idea
