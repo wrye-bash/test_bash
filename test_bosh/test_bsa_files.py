@@ -61,7 +61,7 @@ class TestBSA(TestCase):
 
 
 Oblivion_Misc_bsa = OrderedDict([
-    ('menus', (
+    (u'menus', (
 u'menus\\loading_bar_ingame_menu.xml', u'menus\\menu_labels.txt',
 u'menus\\scroll_menu.xml', u'menus\\book_menu.xml',
 u'menus\\persuasion_menu.xml', u'menus\\recharge_menu.xml',
@@ -77,7 +77,7 @@ u'menus\\quantity_menu.xml', u'menus\\repair_menu.xml',
 u'menus\\container_menu.xml', u'menus\\vssver.scc',
 u'menus\\strings.xml', u'menus\\class_menu.xml',
 u'menus\\lockpick_menu.xml')),
-    ('fonts', (
+    (u'fonts', (
 u'fonts\\kingthings_regular.fnt',
 u'fonts\\tahoma_bold_small_0_lod_a.tex',
 u'fonts\\kingthings_shadowed_0_lod_a.tex', u'fonts\\daedric_font.fnt',
@@ -85,7 +85,7 @@ u'fonts\\handwritten_0_lod_a.tex', u'fonts\\handwritten.fnt',
 u'fonts\\kingthings_regular_0_lod_a.tex',
 u'fonts\\tahoma_bold_small.fnt', u'fonts\\kingthings_shadowed.fnt',
 u'fonts\\daedric_font_0_lod_a.tex')),
-    ('menus\\prefabs', (
+    (u'menus\\prefabs', (
 u'menus\\prefabs\\scroll_line.txt',
 u'menus\\prefabs\\scroll_line.xml',
 u'menus\\prefabs\\horiz_floating_scroll.xml',
@@ -108,7 +108,7 @@ u'menus\\prefabs\\button_long.xml',
 u'menus\\prefabs\\horizontal_scroll.xml',
 u'menus\\prefabs\\focus_box.xml',
 u'menus\\prefabs\\item_listing.xml')),
-    ('menus\\main', (
+    (u'menus\\main', (
 u'menus\\main\\copy of stats_menu.txt',
 u'menus\\main\\player_model.xml',
 u'menus\\main\\hud_main_menu.xml',
@@ -121,11 +121,11 @@ u'menus\\main\\hud_reticle.xml',
 u'menus\\main\\magic_popup_menu.xml',
 u'menus\\main\\inventory_menu.xml', u'menus\\main\\map_menu.xml',
 u'menus\\main\\stats_menu.xml')),
-    ('menus\\generic', (
+    (u'menus\\generic', (
 u'menus\\generic\\test_menu.xml',
 u'menus\\generic\\skill_perk.xml', u'menus\\generic\\vssver.scc',
 u'menus\\generic\\quest_added.xml')),
-    ('menus\\options', (
+    (u'menus\\options', (
 u'menus\\options\\main_menu.xml',
 u'menus\\options\\video_menu.xml',
 u'menus\\options\\load_menu.xml',
@@ -141,7 +141,7 @@ u'menus\\options\\downloads_menu.xml',
 u'menus\\options\\pause_menu.xml',
 u'menus\\options\\gameplay_menu.xml',
 u'menus\\options\\video_display_menu.xml')),
-    ('menus\\chargen', (
+    (u'menus\\chargen', (
 u'menus\\chargen\\birthsign_menu.xml',
 u'menus\\chargen\\skills_menu.xml',
 u'menus\\chargen\\specilization_menu.xml',
@@ -149,9 +149,9 @@ u'menus\\chargen\\vssver.scc',
 u'menus\\chargen\\attributes_menu.xml',
 u'menus\\chargen\\class_menu.xml',
 u'menus\\chargen\\race_sex_menu.xml')),
-    ('facegen', (u'facegen\\si.ctl',)),
-    ('menus\\message', (u'menus\\message\\message_menu.xml',)),
-    ('menus\\dialog', (
+    (u'facegen', (u'facegen\\si.ctl',)),
+    (u'menus\\message', (u'menus\\message\\message_menu.xml',)),
+    (u'menus\\dialog', (
 u'menus\\dialog\\sigilstone.xml',
 u'menus\\dialog\\persuasion_menu.xml',
 u'menus\\dialog\\dialog_menu.xml', u'menus\\dialog\\alchemy.xml',
