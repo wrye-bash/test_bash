@@ -20,11 +20,11 @@ class TestBSAHeader(TestCase):
     def test_load_header(self):
         with open('F:\GAMES\TESIV\Oblivion\Data\Oblivion - Misc.bsa',
                   'r') as bsa:
-            h = bsa_files.BSAHeader()
+            h = bsa_files.OblivionBsaHeader()
             h.load_header(bsa)
-            assert h.file_id == 4281154
+            assert h.file_id == bsa_files.OblivionBsaHeader.bsa_magic
             assert h.version == 103
-            assert h.folder_record_offset == 36
+            assert h.folder_records_offset == 36
             assert h.archive_flags == 1795
             assert h.folder_count == 10
             assert h.file_count == 115
@@ -49,9 +49,10 @@ if __name__ == '__main__':
     # __file__)))))
     unittest.main()
 
-class TestBSA(TestCase):
+class TestOblivionBsa(TestCase):
     def test___init__(self):
-        bsa = bsa_files.BSA('F:\GAMES\TESIV\Oblivion\Data\Oblivion - Misc.bsa')
+        bsa = bsa_files.OblivionBsa(
+            'F:\GAMES\TESIV\Oblivion\Data\Oblivion - Misc.bsa')
         # pprint(bsa.bsa_folders)
         od = OrderedDict()
         for k, v in bsa.bsa_folders.iteritems():
