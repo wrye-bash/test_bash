@@ -61,6 +61,17 @@ class TestSkyrimBsa(TestCase):
         # pprint(od)
         assert od == Skyrim_Interface_bsa
 
+class TestFallout4Ba2(TestCase):
+    def test___init__(self):
+        bsa = bsa_files.Fallout4Ba2(
+            r'F:\FALLOUT 4\Update\Data\Fallout4 - Animations.ba2')
+        # pprint(bsa.bsa_folders)
+        od = OrderedDict()
+        for k, v in bsa.bsa_folders.iteritems():
+            od[k] = (tuple(unicode(a) for a in v.assets.itervalues()))
+        pprint(od)
+        # assert od == Skyrim_Interface_bsa
+
 
 Oblivion_Misc_bsa = OrderedDict([
     (u'menus', (
