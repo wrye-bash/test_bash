@@ -5,6 +5,8 @@ from unittest import TestCase
 import sys
 from os.path import dirname, abspath, sep
 
+import itertools
+
 mopy = dirname(dirname(dirname(abspath(__file__))))
 assert mopy.split(sep)[-1].lower() == 'mopy'
 sys.path.insert(0, mopy)
@@ -40,9 +42,10 @@ class TestBSAFolderRecord(TestCase):
             assert folder_rec.file_records_offset == 2280
 
 class TestOblivionBsa(TestCase):
+    bsa_path = r'F:\GAMES\TESIV\Oblivion\Data\Oblivion - Misc.bsa'
+
     def test___init__(self):
-        bsa = bsa_files.OblivionBsa(
-            r'F:\GAMES\TESIV\Oblivion\Data\Oblivion - Misc.bsa')
+        bsa = bsa_files.OblivionBsa(self.bsa_path, names_only=False)
         # pprint(bsa.bsa_folders)
         od = OrderedDict()
         for k, v in bsa.bsa_folders.iteritems():
@@ -50,10 +53,16 @@ class TestOblivionBsa(TestCase):
         # pprint(od)
         assert od == Oblivion_Misc_bsa
 
+    def test___init__light(self):
+        bsa = bsa_files.OblivionBsa(self.bsa_path, names_only=True)
+        assert bsa._filenames == list(
+            itertools.chain.from_iterable(Oblivion_Misc_bsa.values()))
+
 class TestSkyrimBsa(TestCase):
+    bsa_path = r'F:\GAMES\Skyrim\Data\Skyrim - Interface.bsa'
+
     def test___init__(self):
-        bsa = bsa_files.SkyrimBsa(
-            r'F:\GAMES\Skyrim\Data\Skyrim - Interface.bsa')
+        bsa = bsa_files.SkyrimBsa(self.bsa_path, names_only=False)
         # pprint(bsa.bsa_folders)
         od = OrderedDict()
         for k, v in bsa.bsa_folders.iteritems():
@@ -61,17 +70,26 @@ class TestSkyrimBsa(TestCase):
         # pprint(od)
         assert od == Skyrim_Interface_bsa
 
+    def test___init__light(self):
+        bsa = bsa_files.SkyrimBsa(self.bsa_path, names_only=True)
+        assert bsa._filenames == list(
+            itertools.chain.from_iterable(Skyrim_Interface_bsa.itervalues()))
+
 class TestFallout4Ba2(TestCase):
+    bsa_path = r"F:\GAMES\FALLOUT 4\Data\Fallout4 - Animations.ba2"
+
     def test___init__(self):
-        bsa = bsa_files.Fallout4Ba2(
-            r'F:\FALLOUT 4\Update\Data\Fallout4 - Animations.ba2')
+        bsa = bsa_files.Fallout4Ba2(self.bsa_path, names_only=False)
         # pprint(bsa.bsa_folders)
-        od = OrderedDict()
-        for k, v in bsa.bsa_folders.iteritems():
-            od[k] = (tuple(unicode(a) for a in v.assets.itervalues()))
-        pprint(od)
+        # od = OrderedDict()
+        # for k, v in bsa.bsa_folders.iteritems():
+        #     od[k] = (tuple(unicode(a) for a in v.assets.itervalues()))
+        # pprint(od)
         # assert od == Skyrim_Interface_bsa
 
+    def test___init__light(self):
+        bsa = bsa_files.Fallout4Ba2(self.bsa_path, names_only=True)
+        # print bsa._filenames
 
 Oblivion_Misc_bsa = OrderedDict([
     (u'menus', (
