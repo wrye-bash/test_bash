@@ -3,17 +3,12 @@ from collections import OrderedDict
 from pprint import pprint
 from unittest import TestCase
 import sys
-from os.path import dirname, abspath, join, sep
+from os.path import dirname, abspath, sep
 
 mopy = dirname(dirname(dirname(abspath(__file__))))
 assert mopy.split(sep)[-1].lower() == 'mopy'
-bash_source = join(mopy, 'bash')
-print sys.path
 sys.path.insert(0, mopy)
-print sys.path
-print 'Mopy folder appended to path: ', mopy
-print 'top_package', __name__.split('.')[0]
-print __name__
+print 'Mopy folder inserted to path: ', mopy
 # http://stackoverflow.com/q/40022220/281545
 from bash.bosh import bsa_files
 
@@ -44,16 +39,10 @@ class TestBSAFolderRecord(TestCase):
             assert folder_rec.files_count == 28
             assert folder_rec.file_records_offset == 2280
 
-if __name__ == '__main__':
-    # from os import sys, path
-    # sys.path.append(path.dirname(path.dirname(path.dirname(path.abspath(
-    # __file__)))))
-    unittest.main()
-
 class TestOblivionBsa(TestCase):
     def test___init__(self):
         bsa = bsa_files.OblivionBsa(
-            'F:\GAMES\TESIV\Oblivion\Data\Oblivion - Misc.bsa')
+            r'F:\GAMES\TESIV\Oblivion\Data\Oblivion - Misc.bsa')
         # pprint(bsa.bsa_folders)
         od = OrderedDict()
         for k, v in bsa.bsa_folders.iteritems():
@@ -64,7 +53,7 @@ class TestOblivionBsa(TestCase):
 class TestSkyrimBsa(TestCase):
     def test___init__(self):
         bsa = bsa_files.SkyrimBsa(
-            'F:\GAMES\Skyrim\Data\Skyrim - Interface.bsa')
+            r'F:\GAMES\Skyrim\Data\Skyrim - Interface.bsa')
         # pprint(bsa.bsa_folders)
         od = OrderedDict()
         for k, v in bsa.bsa_folders.iteritems():
@@ -340,3 +329,6 @@ Skyrim_Interface_bsa = OrderedDict([
         u'interface\\controls\\pc\\mouse.txt',
         u'interface\\controls\\pc\\keyboard_german.txt',
         u'interface\\controls\\pc\\controlmap.txt'))])
+
+if __name__ == '__main__':
+    unittest.main()
