@@ -12,7 +12,7 @@ import struct
 
 from test_bash.test_bosh.test_bsa_files_constants import Skyrim_Interface_bsa, \
     Oblivion_Misc_bsa, \
-    HeartOftheDead_Folder_Names
+    HeartOftheDead_Folder_Names, MidasSpells
 
 mopy = dirname(dirname(dirname(abspath(__file__))))
 assert mopy.split(sep)[-1].lower() == 'mopy'
@@ -67,6 +67,7 @@ class TestOblivionBsa(TestCase):
 
 class TestHeartOfTheDead(TestCase):
     bsa_path = r'F:\GAMES\TESIV\Oblivion\Data\HeartOftheDead.bsa'
+    folder_names = HeartOftheDead_Folder_Names
 
     def test_load_bsa_light_folder_names(self):
         self.bsa_folders = OrderedDict()
@@ -104,7 +105,11 @@ class TestHeartOfTheDead(TestCase):
         print total_name_size
         print total_size
         print sum(k.files_count for k in folder_records)
-        assert self.bsa_folders.keys() == HeartOftheDead_Folder_Names
+        assert self.bsa_folders.keys() == self.folder_names
+
+class TestMidasSpells(TestHeartOfTheDead):
+    bsa_path = r'F:\GAMES\TESIV\Oblivion\Data\MidasSpells.bsa'
+    folder_names = MidasSpells
 
 class TestSkyrimBsa(TestCase):
     bsa_path = r'F:\GAMES\Skyrim\Data\Skyrim - Interface.bsa'

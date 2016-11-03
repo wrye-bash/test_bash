@@ -24,12 +24,12 @@
 
 """Import the Wrye Bash directories"""
 import sys
-from os.path import dirname, abspath, join, sep
-mopy = dirname(dirname(abspath(__file__)))
-assert mopy.split(sep)[-1].lower() == 'mopy'
-bash_source = join(mopy, 'bash')
-print sys.path
-sys.path.insert(0, mopy)
-print 'Mopy folder appended to path: ', mopy
-print __name__.split('.')[0]
-print __name__
+# from os.path import dirname, abspath, join, sep
+# mopy = dirname(dirname(abspath(__file__)))
+# assert mopy.split(sep)[-1].lower() == 'mopy'
+# bash_source = join(mopy, 'bash')
+# print sys.path
+# sys.path.insert(0, mopy)
+# print 'Mopy folder appended to path: ', mopy
+# print __name__.split('.')[0]
+# print __name__
