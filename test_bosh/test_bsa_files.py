@@ -1,3 +1,4 @@
+import os
 import unittest
 from collections import OrderedDict
 from pprint import pprint
@@ -6,6 +7,8 @@ import sys
 from os.path import dirname, abspath, sep
 
 import itertools
+
+import struct
 
 from test_bash.test_bosh.test_bsa_files_constants import Skyrim_Interface_bsa, \
     Oblivion_Misc_bsa, \
@@ -61,6 +64,47 @@ class TestOblivionBsa(TestCase):
         bsa = bsa_files.OblivionBsa(self.bsa_path, names_only=True)
         assert bsa._filenames == list(
             itertools.chain.from_iterable(Oblivion_Misc_bsa.values()))
+
+class TestHeartOfTheDead(TestCase):
+    bsa_path = r'F:\GAMES\TESIV\Oblivion\Data\HeartOftheDead.bsa'
+
+    def test_load_bsa_light_folder_names(self):
+        self.bsa_folders = OrderedDict()
+        with open(self.bsa_path, 'rb') as bsa:
+            h = bsa_files.OblivionBsaHeader()
+            h.load_header(bsa)
+            folder_records = [] # we need those to parse the folder names
+            for __ in xrange(h.folder_count):
+                rec = bsa_files.BSAFolderRecord()
+                try:
+                    rec.load_record(bsa)
+                except Exception as e:
+                    print __, e
+                folder_records.append(rec)
+            # load the file record block
+            total_size = total_name_size = 0
+            for folder_record in folder_records:
+                name_size = struct.unpack('B', bsa.read(1))[0]
+                folder_path = unicode(struct.unpack('%ds' % (name_size - 1),
+                                                    bsa.read(name_size - 1))[
+                    0], encoding=bsa_files._bsa_encoding)
+                bsa.read(1)
+                total_size += name_size + 1
+                total_name_size += name_size
+                current_folder = self.bsa_folders.setdefault(
+                    folder_path, bsa_files.BSAFolder(folder_record))
+                # print folder_path
+                for __ in xrange(folder_record.files_count):
+                    rec = bsa_files.BSAFileRecord()
+                    rec.load_record(bsa)
+                    file_name = u'?%d' % rec.hash
+                    current_folder.assets[file_name] = bsa_files.BSAAsset(
+                        os.path.sep.join((folder_path, file_name)), rec)
+                total_size+=folder_record.files_count *16
+        print total_name_size
+        print total_size
+        print sum(k.files_count for k in folder_records)
+        assert self.bsa_folders.keys() == HeartOftheDead_Folder_Names
 
 class TestSkyrimBsa(TestCase):
     bsa_path = r'F:\GAMES\Skyrim\Data\Skyrim - Interface.bsa'
