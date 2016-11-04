@@ -86,9 +86,9 @@ class TestHeartOfTheDead(TestCase):
             total_size = total_name_size = 0
             for folder_record in folder_records:
                 name_size = struct.unpack('B', bsa.read(1))[0]
-                folder_path = unicode(struct.unpack('%ds' % (name_size - 1),
-                                                    bsa.read(name_size - 1))[
-                    0], encoding=bsa_files._bsa_encoding)
+                folder_path = bsa_files._decode_path(
+                    struct.unpack('%ds' % (name_size - 1),
+                                  bsa.read(name_size - 1))[0])
                 bsa.read(1)
                 total_size += name_size + 1
                 total_name_size += name_size
