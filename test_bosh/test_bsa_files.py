@@ -12,7 +12,7 @@ import struct
 
 from test_bash.test_bosh.test_bsa_files_constants import Skyrim_Interface_bsa, \
     Oblivion_Misc_bsa, \
-    HeartOftheDead_Folder_Names, MidasSpells
+    HeartOftheDead_Folder_Names, MidasSpells, SkyrimSETextures8
 
 mopy = dirname(dirname(dirname(abspath(__file__))))
 assert mopy.split(sep)[-1].lower() == 'mopy'
@@ -127,6 +127,24 @@ class TestSkyrimBsa(TestCase):
         bsa = bsa_files.SkyrimBsa(self.bsa_path, names_only=True)
         assert bsa._filenames == list(
             itertools.chain.from_iterable(Skyrim_Interface_bsa.itervalues()))
+
+class TestSkyrimSEBsa(TestCase):
+    bsa_path = r"F:\GAMES\The Elder Scrolls V Skyrim Special Edition\Data\Skyrim - Textures8.bsa"
+    dict_file = SkyrimSETextures8
+
+    def test___init__(self):
+        bsa = bsa_files.SkyrimSeBsa(self.bsa_path, names_only=False)
+        # pprint(bsa.bsa_folders)
+        od = OrderedDict()
+        for k, v in bsa.bsa_folders.iteritems():
+            od[k] = (tuple(unicode(a) for a in v.assets.itervalues()))
+        # pprint(od)
+        assert od == self.dict_file
+
+    def test___init__light(self):
+        bsa = bsa_files.SkyrimSeBsa(self.bsa_path, names_only=True)
+        assert bsa._filenames == list(
+            itertools.chain.from_iterable(self.dict_file.itervalues()))
 
 class TestFallout4Ba2(TestCase):
     bsa_path = r"F:\GAMES\FALLOUT 4\Data\Fallout4 - Animations.ba2"
