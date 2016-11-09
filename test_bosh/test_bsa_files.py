@@ -10,9 +10,9 @@ import itertools
 
 import struct
 
-from test_bash.test_bosh.test_bsa_files_constants import Skyrim_Interface_bsa, \
-    Oblivion_Misc_bsa, \
-    HeartOftheDead_Folder_Names, MidasSpells, SkyrimSETextures8
+from test_bash.test_bosh.test_bsa_files_constants import \
+    Skyrim_Interface_bsa, Oblivion_Misc_bsa, HeartOftheDead_Folder_Names, \
+    MidasSpells, SkyrimSETextures8, HodBsa, MidasBsa
 
 mopy = dirname(dirname(dirname(abspath(__file__))))
 assert mopy.split(sep)[-1].lower() == 'mopy'
@@ -50,6 +50,7 @@ class TestBSAFolderRecord(TestCase):
 
 class TestOblivionBsa(TestCase):
     bsa_path = r'F:\GAMES\TESIV\Oblivion\Data\Oblivion - Misc.bsa'
+    dict_file = Oblivion_Misc_bsa
 
     def test___init__(self):
         bsa = bsa_files.OblivionBsa(self.bsa_path, names_only=False)
@@ -58,15 +59,16 @@ class TestOblivionBsa(TestCase):
         for k, v in bsa.bsa_folders.iteritems():
             od[k] = (tuple(unicode(a) for a in v.assets.itervalues()))
         # pprint(od)
-        assert od == Oblivion_Misc_bsa
+        assert od == self.dict_file
 
     def test___init__light(self):
         bsa = bsa_files.OblivionBsa(self.bsa_path, names_only=True)
         assert bsa._filenames == list(
-            itertools.chain.from_iterable(Oblivion_Misc_bsa.values()))
+            itertools.chain.from_iterable(self.dict_file.values()))
 
-class TestHeartOfTheDead(TestCase):
+class TestHeartOfTheDead(TestOblivionBsa):
     bsa_path = r'F:\GAMES\TESIV\Oblivion\Data\HeartOftheDead.bsa'
+    dict_file = HodBsa
     folder_names = HeartOftheDead_Folder_Names
 
     def test_load_bsa_light_folder_names(self):
@@ -110,6 +112,7 @@ class TestHeartOfTheDead(TestCase):
 class TestMidasSpells(TestHeartOfTheDead):
     bsa_path = r'F:\GAMES\TESIV\Oblivion\Data\MidasSpells.bsa'
     folder_names = MidasSpells
+    dict_file = MidasBsa
 
 class TestSkyrimBsa(TestCase):
     bsa_path = r'F:\GAMES\Skyrim\Data\Skyrim - Interface.bsa'
