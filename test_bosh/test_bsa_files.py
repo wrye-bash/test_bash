@@ -48,12 +48,13 @@ class TestBSAFolderRecord(TestCase):
             assert folder_rec.files_count == 28
             assert folder_rec.file_records_offset == 2280
 
-class TestOblivionBsa(TestCase):
+class TestBsa(TestCase):
     bsa_path = r'F:\GAMES\TESIV\Oblivion\Data\Oblivion - Misc.bsa'
     dict_file = Oblivion_Misc_bsa
+    bsa_type = bsa_files.OblivionBsa
 
     def test___init__(self):
-        bsa = bsa_files.OblivionBsa(self.bsa_path, names_only=False)
+        bsa = self.bsa_type(self.bsa_path, names_only=False, load_cache=True)
         # pprint(bsa.bsa_folders)
         od = OrderedDict()
         for k, v in bsa.bsa_folders.iteritems():
@@ -62,9 +63,12 @@ class TestOblivionBsa(TestCase):
         assert od == self.dict_file
 
     def test___init__light(self):
-        bsa = bsa_files.OblivionBsa(self.bsa_path, names_only=True)
+        bsa = self.bsa_type(self.bsa_path, names_only=True, load_cache=True)
         assert bsa._filenames == list(
             itertools.chain.from_iterable(self.dict_file.values()))
+
+class TestOblivionBsa(TestBsa):
+    pass
 
 class TestHeartOfTheDead(TestOblivionBsa):
     bsa_path = r'F:\GAMES\TESIV\Oblivion\Data\HeartOftheDead.bsa'
@@ -114,46 +118,21 @@ class TestMidasSpells(TestHeartOfTheDead):
     folder_names = MidasSpells
     dict_file = MidasBsa
 
-class TestSkyrimBsa(TestCase):
+class TestSkyrimBsa(TestBsa):
     bsa_path = r'F:\GAMES\Skyrim\Data\Skyrim - Interface.bsa'
-
-    def test___init__(self):
-        bsa = bsa_files.SkyrimBsa(self.bsa_path, names_only=False)
-        # pprint(bsa.bsa_folders)
-        od = OrderedDict()
-        for k, v in bsa.bsa_folders.iteritems():
-            od[k] = (tuple(unicode(a) for a in v.assets.itervalues()))
-        # pprint(od)
-        assert od == Skyrim_Interface_bsa
-
-    def test___init__light(self):
-        bsa = bsa_files.SkyrimBsa(self.bsa_path, names_only=True)
-        assert bsa._filenames == list(
-            itertools.chain.from_iterable(Skyrim_Interface_bsa.itervalues()))
+    dict_file = Skyrim_Interface_bsa
+    bsa_type = bsa_files.SkyrimBsa
 
 class TestSkyrimSEBsa(TestCase):
     bsa_path = r"F:\GAMES\The Elder Scrolls V Skyrim Special Edition\Data\Skyrim - Textures8.bsa"
     dict_file = SkyrimSETextures8
-
-    def test___init__(self):
-        bsa = bsa_files.SkyrimSeBsa(self.bsa_path, names_only=False)
-        # pprint(bsa.bsa_folders)
-        od = OrderedDict()
-        for k, v in bsa.bsa_folders.iteritems():
-            od[k] = (tuple(unicode(a) for a in v.assets.itervalues()))
-        # pprint(od)
-        assert od == self.dict_file
-
-    def test___init__light(self):
-        bsa = bsa_files.SkyrimSeBsa(self.bsa_path, names_only=True)
-        assert bsa._filenames == list(
-            itertools.chain.from_iterable(self.dict_file.itervalues()))
+    bsa_type = bsa_files.SkyrimSeBsa
 
 class TestFallout4Ba2(TestCase):
     bsa_path = r"F:\GAMES\FALLOUT 4\Data\Fallout4 - Animations.ba2"
 
     def test___init__(self):
-        bsa = bsa_files.Fallout4Ba2(self.bsa_path, names_only=False)
+        bsa = bsa_files.Fallout4Ba2(self.bsa_path, names_only=False, load_cache=True)
         # pprint(bsa.bsa_folders)
         # od = OrderedDict()
         # for k, v in bsa.bsa_folders.iteritems():
@@ -162,7 +141,7 @@ class TestFallout4Ba2(TestCase):
         # assert od == Skyrim_Interface_bsa
 
     def test___init__light(self):
-        bsa = bsa_files.Fallout4Ba2(self.bsa_path, names_only=True)
+        bsa = bsa_files.Fallout4Ba2(self.bsa_path, names_only=True, load_cache=True)
         # print bsa._filenames
 
 if __name__ == '__main__':
