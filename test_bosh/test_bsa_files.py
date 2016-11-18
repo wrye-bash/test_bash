@@ -14,12 +14,50 @@ from test_bash.test_bosh.test_bsa_files_constants import \
     Skyrim_Interface_bsa, Oblivion_Misc_bsa, HeartOftheDead_Folder_Names, \
     MidasSpells, SkyrimSETextures8, HodBsa, MidasBsa
 
+# TODO: flesh out fallout4 tests
+
 mopy = dirname(dirname(dirname(abspath(__file__))))
 assert mopy.split(sep)[-1].lower() == 'mopy'
 sys.path.insert(0, mopy)
 print 'Mopy folder inserted to path: ', mopy
 # http://stackoverflow.com/q/40022220/281545
 from bash.bosh import bsa_files
+
+# Some random records from the bsas to test those are read ok in _load_bsa
+ob_rec = bsa_files.BSAFileRecord()
+ob_rec.hash = 8316439984031428212
+ob_rec.file_data_size = 14632
+ob_rec.raw_file_data_offset = 2704612
+ob_rec = (u'fonts', u'daedric_font.fnt', ob_rec)
+
+hod_rec = bsa_files.BSAFileRecord()
+hod_rec.hash = 7255635117157822828
+hod_rec.file_data_size = 10017
+hod_rec.raw_file_data_offset = 259709520
+hod_rec = (u'meshes\characters\\ren\eyes', u'ren_eye01l.nif', hod_rec)
+
+midas_rec = bsa_files.BSAFileRecord()
+midas_rec.hash = 1382942182235694450
+midas_rec.file_data_size = 1662
+midas_rec.raw_file_data_offset = 36787161
+midas_rec = (u'meshes\characters\midaswreyth', u'midasteethlower.nif', midas_rec)
+
+skyrim_rec = bsa_files.BSAFileRecord()
+skyrim_rec.hash = 12662062996181901680
+skyrim_rec.file_data_size = 5479
+skyrim_rec.raw_file_data_offset = 9285
+skyrim_rec = (u'interface\\controls\\360', u'controlmap.txt', skyrim_rec)
+
+skyrimse_rec = bsa_files.BSAFileRecord()
+skyrimse_rec.hash = 2805577329219973297
+skyrimse_rec.file_data_size = 40341
+skyrimse_rec.raw_file_data_offset = 20283702
+skyrimse_rec = (u'textures\\_byoh\\clutter', u'breadpeel01.dds', skyrimse_rec)
+
+# fallout4_rec = bsa_files.BSAFileRecord()
+# fallout4_rec.hash = 8316439984031428212
+# fallout4_rec.file_data_size = 14632
+# fallout4_rec.raw_file_data_offset = 2704612
 
 class TestBSAHeader(TestCase):
     def test_load_header(self):
@@ -48,10 +86,11 @@ class TestBSAFolderRecord(TestCase):
             assert folder_rec.files_count == 28
             assert folder_rec.file_records_offset == 2280
 
-class TestBsa(TestCase):
+class TestOblivionBsa(TestCase):
     bsa_path = r'F:\GAMES\TESIV\Oblivion\Data\Oblivion - Misc.bsa'
     dict_file = Oblivion_Misc_bsa
     bsa_type = bsa_files.OblivionBsa
+    file_rec = ob_rec
 
     def test___init__(self):
         bsa = self.bsa_type(self.bsa_path, names_only=False, load_cache=True)
@@ -61,19 +100,22 @@ class TestBsa(TestCase):
             od[k] = (tuple(unicode(a) for a in v.assets.itervalues()))
         # pprint(od)
         assert od == self.dict_file
+        rec = bsa.bsa_folders[self.file_rec[0]].assets[self.file_rec[1]].filerecord
+        assert rec.hash == self.file_rec[2].hash
+        assert rec.file_data_size == self.file_rec[2].file_data_size
+        assert rec.raw_file_data_offset == self.file_rec[2].raw_file_data_offset
 
     def test___init__light(self):
         bsa = self.bsa_type(self.bsa_path, names_only=True, load_cache=True)
         assert bsa._filenames == list(
             itertools.chain.from_iterable(self.dict_file.values()))
 
-class TestOblivionBsa(TestBsa):
-    pass
 
 class TestHeartOfTheDead(TestOblivionBsa):
     bsa_path = r'F:\GAMES\TESIV\Oblivion\Data\HeartOftheDead.bsa'
     dict_file = HodBsa
     folder_names = HeartOftheDead_Folder_Names
+    file_rec = hod_rec
 
     def test_load_bsa_light_folder_names(self):
         self.bsa_folders = OrderedDict()
@@ -117,16 +159,19 @@ class TestMidasSpells(TestHeartOfTheDead):
     bsa_path = r'F:\GAMES\TESIV\Oblivion\Data\MidasSpells.bsa'
     folder_names = MidasSpells
     dict_file = MidasBsa
+    file_rec = midas_rec
 
-class TestSkyrimBsa(TestBsa):
+class TestSkyrimBsa(TestOblivionBsa):
     bsa_path = r'F:\GAMES\Skyrim\Data\Skyrim - Interface.bsa'
     dict_file = Skyrim_Interface_bsa
     bsa_type = bsa_files.SkyrimBsa
+    file_rec = skyrim_rec
 
-class TestSkyrimSEBsa(TestCase):
+class TestSkyrimSEBsa(TestOblivionBsa):
     bsa_path = r"F:\GAMES\The Elder Scrolls V Skyrim Special Edition\Data\Skyrim - Textures8.bsa"
     dict_file = SkyrimSETextures8
     bsa_type = bsa_files.SkyrimSeBsa
+    file_rec = skyrimse_rec
 
 class TestFallout4Ba2(TestCase):
     bsa_path = r"F:\GAMES\FALLOUT 4\Data\Fallout4 - Animations.ba2"
