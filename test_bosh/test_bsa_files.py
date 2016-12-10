@@ -26,37 +26,37 @@ from bash.bosh import bsa_files
 # Some random records from the bsas to test those are read ok in _load_bsa
 ob_rec = bsa_files.BSAFileRecord()
 ob_rec.hash = 8316439984031428212
-ob_rec.file_data_size = 14632
+ob_rec.file_size_flags = 14632
 ob_rec.raw_file_data_offset = 2704612
 ob_rec = (u'fonts', u'daedric_font.fnt', ob_rec)
 
 hod_rec = bsa_files.BSAFileRecord()
 hod_rec.hash = 7255635117157822828
-hod_rec.file_data_size = 10017
+hod_rec.file_size_flags = 10017
 hod_rec.raw_file_data_offset = 259709520
 hod_rec = (u'meshes\characters\\ren\eyes', u'ren_eye01l.nif', hod_rec)
 
 midas_rec = bsa_files.BSAFileRecord()
 midas_rec.hash = 1382942182235694450
-midas_rec.file_data_size = 1662
+midas_rec.file_size_flags = 1662
 midas_rec.raw_file_data_offset = 36787161
 midas_rec = (u'meshes\characters\midaswreyth', u'midasteethlower.nif', midas_rec)
 
 skyrim_rec = bsa_files.BSAFileRecord()
 skyrim_rec.hash = 12662062996181901680
-skyrim_rec.file_data_size = 5479
+skyrim_rec.file_size_flags = 5479
 skyrim_rec.raw_file_data_offset = 9285
 skyrim_rec = (u'interface\\controls\\360', u'controlmap.txt', skyrim_rec)
 
 skyrimse_rec = bsa_files.BSAFileRecord()
 skyrimse_rec.hash = 2805577329219973297
-skyrimse_rec.file_data_size = 40341
+skyrimse_rec.file_size_flags = 40341
 skyrimse_rec.raw_file_data_offset = 20283702
 skyrimse_rec = (u'textures\\_byoh\\clutter', u'breadpeel01.dds', skyrimse_rec)
 
 # fallout4_rec = bsa_files.BSAFileRecord()
 # fallout4_rec.hash = 8316439984031428212
-# fallout4_rec.file_data_size = 14632
+# fallout4_rec.file_size_flags = 14632
 # fallout4_rec.raw_file_data_offset = 2704612
 
 class TestBSAHeader(TestCase):
@@ -102,7 +102,7 @@ class TestOblivionBsa(TestCase):
         assert od == self.dict_file
         rec = bsa.bsa_folders[self.file_rec[0]].assets[self.file_rec[1]].filerecord
         assert rec.hash == self.file_rec[2].hash
-        assert rec.file_data_size == self.file_rec[2].file_data_size
+        assert rec.file_size_flags == self.file_rec[2].file_size_flags
         assert rec.raw_file_data_offset == self.file_rec[2].raw_file_data_offset
 
     def test___init__light(self):
