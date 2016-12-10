@@ -1,3 +1,4 @@
+import filecmp
 import os
 import unittest
 from collections import OrderedDict
@@ -22,6 +23,8 @@ sys.path.insert(0, mopy)
 print 'Mopy folder inserted to path: ', mopy
 # http://stackoverflow.com/q/40022220/281545
 from bash.bosh import bsa_files
+
+resources_root = ur'C:\Dropbox\eclipse_workspaces\python\wrye-bash\Mopy\test_bash\test_bosh\resources' #os.path.abspath('resources')
 
 # Some random records from the bsas to test those are read ok in _load_bsa
 ob_rec = bsa_files.BSAFileRecord()
@@ -85,6 +88,17 @@ class TestBSAFolderRecord(TestCase):
             assert folder_rec.hash == 0x6519496D057573
             assert folder_rec.files_count == 28
             assert folder_rec.file_records_offset == 2280
+
+class _TestExtractMixin(object):
+    assets_to_extract = None
+
+    def test_extract_assets(self):
+        bsa = self.bsa_type(self.bsa_path)
+        bsa.extract_assets(self.assets_to_extract, self.extract_dir)
+        for f in self.assets_to_extract:
+            assert filecmp.cmp(os.path.join(self.extract_dir, f),
+                               os.path.join(self.resources_dir, f),
+                               shallow=False)
 
 class TestOblivionBsa(TestCase):
     bsa_path = r'F:\GAMES\TESIV\Oblivion\Data\Oblivion - Misc.bsa'
@@ -161,11 +175,55 @@ class TestMidasSpells(TestHeartOfTheDead):
     dict_file = MidasBsa
     file_rec = midas_rec
 
-class TestSkyrimBsa(TestOblivionBsa):
+class TestSkyrimBsa(_TestExtractMixin, TestOblivionBsa):
     bsa_path = r'F:\GAMES\Skyrim\Data\Skyrim - Interface.bsa'
     dict_file = Skyrim_Interface_bsa
     bsa_type = bsa_files.SkyrimBsa
     file_rec = skyrim_rec
+    assets_to_extract = {u'strings\\skyrim_german.strings',
+                         u'strings\\skyrim_english.ilstrings',
+                         u'strings\\skyrim_italian.dlstrings',
+                         u'strings\\skyrim_english.strings',
+                         u'strings\\skyrim_spanish.ilstrings',
+                         u'strings\\skyrim_spanish.strings',
+                         u'strings\\skyrim_italian.ilstrings',
+                         u'strings\\skyrim_italian.strings',
+                         u'strings\\skyrim_french.dlstrings',
+                         u'strings\\skyrim_french.ilstrings',
+                         u'strings\\skyrim_german.dlstrings',
+                         u'strings\\skyrim_french.strings',
+                         u'strings\\skyrim_english.dlstrings',
+                         u'strings\\skyrim_german.ilstrings',
+                         u'strings\\skyrim_spanish.dlstrings'}
+    extract_dir = os.path.abspath('bsa_cache/Skyrim')
+    resources_dir = os.path.join('resources/Skyrim')
+
+class TestSkyrimSEBsaExtract(_TestExtractMixin, TestCase):
+    bsa_path = r"F:\GAMES\The Elder Scrolls V Skyrim Special Edition\Data\Skyrim - Interface.bsa"
+    bsa_type = bsa_files.SkyrimSeBsa
+    extract_dir = os.path.abspath('bsa_cache/SkyrimSE')
+    resources_dir = os.path.join('resources/SkyrimSE')
+    assets_to_extract = {u'strings\\skyrim_german.strings',
+                         u'strings\\skyrim_english.ilstrings',
+                         u'strings\\skyrim_italian.dlstrings',
+                         u'strings\\skyrim_english.strings',
+                         u'strings\\skyrim_spanish.ilstrings',
+                         u'strings\\skyrim_spanish.strings',
+                         u'strings\\skyrim_italian.ilstrings',
+                         u'strings\\skyrim_italian.strings',
+                         u'strings\\skyrim_french.dlstrings',
+                         u'strings\\skyrim_french.ilstrings',
+                         u'strings\\skyrim_german.dlstrings',
+                         u'strings\\skyrim_french.strings',
+                         u'strings\\skyrim_english.dlstrings',
+                         u'strings\\skyrim_german.ilstrings',
+                         u'strings\\skyrim_spanish.dlstrings',
+                         u'strings\\skyrim_polish.strings',
+                         u'strings\\skyrim_polish.dlstrings',
+                         u'strings\\skyrim_polish.ilstrings',
+                         u'strings\\skyrim_russian.strings',
+                         u'strings\\skyrim_russian.dlstrings',
+                         u'strings\\skyrim_russian.ilstrings',}
 
 class TestSkyrimSEBsa(TestOblivionBsa):
     bsa_path = r"F:\GAMES\The Elder Scrolls V Skyrim Special Edition\Data\Skyrim - Textures8.bsa"
@@ -173,11 +231,17 @@ class TestSkyrimSEBsa(TestOblivionBsa):
     bsa_type = bsa_files.SkyrimSeBsa
     file_rec = skyrimse_rec
 
-class TestFallout4Ba2(TestCase):
-    bsa_path = r"F:\GAMES\FALLOUT 4\Data\Fallout4 - Animations.ba2"
+class TestFallout4Ba2(_TestExtractMixin, TestCase):
+    bsa_path = r"F:\GAMES\FALLOUT 4\Data\Fallout4 - Interface.ba2"
+    bsa_type = bsa_files.Fallout4Ba2
+    assets_to_extract = {u'Strings\\Fallout4_ja.DLSTRINGS',
+                         u'Strings\\Fallout4_ja.ILSTRINGS',
+                         u'Strings\\Fallout4_ja.STRINGS',}
+    extract_dir = os.path.abspath('bsa_cache/Fallout4')
+    resources_dir = os.path.join('resources/Fallout4')
 
     def test___init__(self):
-        bsa = bsa_files.Fallout4Ba2(self.bsa_path, names_only=False, load_cache=True)
+        bsa = self.bsa_type(self.bsa_path, names_only=False, load_cache=True)
         # pprint(bsa.bsa_folders)
         # od = OrderedDict()
         # for k, v in bsa.bsa_folders.iteritems():

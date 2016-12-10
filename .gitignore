@@ -6,3 +6,5 @@
 .idea/
 # if a symlink
 .idea
+test_bosh/resources/
+test_bosh/bsa_cache/
