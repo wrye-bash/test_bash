@@ -111,10 +111,10 @@ class TestOblivionBsa(TestCase):
         # pprint(bsa.bsa_folders)
         od = OrderedDict()
         for k, v in bsa.bsa_folders.iteritems():
-            od[k] = (tuple(unicode(a) for a in v.folder_assets.itervalues()))
+            od[k] = (tuple(os.path.join(k, a) for a in v.folder_assets.iterkeys()))
         # pprint(od)
         assert od == self.dict_file
-        rec = bsa.bsa_folders[self.file_rec[0]].folder_assets[self.file_rec[1]].filerecord
+        rec = bsa.bsa_folders[self.file_rec[0]].folder_assets[self.file_rec[1]]
         assert rec.hash == self.file_rec[2].hash
         assert rec.file_size_flags == self.file_rec[2].file_size_flags
         assert rec.raw_file_data_offset == self.file_rec[2].raw_file_data_offset
@@ -161,8 +161,7 @@ class TestHeartOfTheDead(TestOblivionBsa):
                     rec = bsa_files.BSAFileRecord()
                     rec.load_record(bsa)
                     file_name = u'?%d' % rec.hash
-                    current_folder.folder_assets[file_name] = bsa_files.BSAAsset(
-                        os.path.sep.join((folder_path, file_name)), rec)
+                    current_folder.folder_assets[file_name] = rec
                 total_size+=folder_record.files_count *16
         print total_name_size
         print total_size
