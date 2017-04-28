@@ -1,4 +1,5 @@
 import filecmp
+import inspect
 import os
 import unittest
 from collections import OrderedDict
@@ -24,7 +25,23 @@ print 'Mopy folder inserted to path: ', mopy
 # http://stackoverflow.com/q/40022220/281545
 from bash.bosh import bsa_files
 
-resources_root = ur'C:\Dropbox\eclipse_workspaces\python\wrye-bash\Mopy\test_bash\test_bosh\resources' #os.path.abspath('resources')
+def get_script_dir(follow_symlinks=True):
+    # http://stackoverflow.com/a/22881871/281545
+    if getattr(sys, 'frozen', False): # py2exe, PyInstaller, cx_Freeze
+        path = os.path.abspath(sys.executable)
+    else:
+        path = inspect.getabsfile(get_script_dir)
+    if follow_symlinks:
+        path = os.path.realpath(path)
+    return os.path.dirname(path)
+
+this_script_dir = get_script_dir()
+# print get_script_dir()
+
+pjoin = os.path.join
+
+resources_root = pjoin(this_script_dir , ur'resources') #os.path.abspath('resources')
+cache_root = pjoin(this_script_dir , ur'bsa_cache')
 
 # Some random records from the bsas to test those are read ok in _load_bsa
 ob_rec = bsa_files.BSAFileRecord()
@@ -91,13 +108,19 @@ class TestBSAFolderRecord(TestCase):
 
 class _TestExtractMixin(object):
     assets_to_extract = None
+    game_folder = 'Override'
+
+    @property
+    def extract_dir(self): return pjoin(cache_root, self.game_folder)
+    @property
+    def resources_dir(self): return pjoin(resources_root, self.game_folder)
 
     def test_extract_assets(self):
         bsa = self.bsa_type(self.bsa_path)
         bsa.extract_assets(self.assets_to_extract, self.extract_dir)
         for f in self.assets_to_extract:
-            assert filecmp.cmp(os.path.join(self.extract_dir, f),
-                               os.path.join(self.resources_dir, f),
+            assert filecmp.cmp(pjoin(self.extract_dir, f),
+                               pjoin(self.resources_dir, f),
                                shallow=False)
 
 class TestOblivionBsa(TestCase):
@@ -111,7 +134,7 @@ class TestOblivionBsa(TestCase):
         # pprint(bsa.bsa_folders)
         od = OrderedDict()
         for k, v in bsa.bsa_folders.iteritems():
-            od[k] = (tuple(os.path.join(k, a) for a in v.folder_assets.iterkeys()))
+            od[k] = (tuple(pjoin(k, a) for a in v.folder_assets.iterkeys()))
         # pprint(od)
         assert od == self.dict_file
         rec = bsa.bsa_folders[self.file_rec[0]].folder_assets[self.file_rec[1]]
@@ -123,7 +146,6 @@ class TestOblivionBsa(TestCase):
         bsa = self.bsa_type(self.bsa_path, names_only=True, load_cache=True)
         assert bsa._filenames == list(
             itertools.chain.from_iterable(self.dict_file.values()))
-
 
 class TestHeartOfTheDead(TestOblivionBsa):
     bsa_path = r'F:\GAMES\TESIV\Oblivion\Data\HeartOftheDead.bsa'
@@ -178,6 +200,7 @@ class TestSkyrimBsa(_TestExtractMixin, TestOblivionBsa):
     bsa_path = r'F:\GAMES\Skyrim\Data\Skyrim - Interface.bsa'
     dict_file = Skyrim_Interface_bsa
     bsa_type = bsa_files.SkyrimBsa
+    game_folder = 'Skyrim'
     file_rec = skyrim_rec
     assets_to_extract = {u'strings\\skyrim_german.strings',
                          u'strings\\skyrim_english.ilstrings',
@@ -194,14 +217,11 @@ class TestSkyrimBsa(_TestExtractMixin, TestOblivionBsa):
                          u'strings\\skyrim_english.dlstrings',
                          u'strings\\skyrim_german.ilstrings',
                          u'strings\\skyrim_spanish.dlstrings'}
-    extract_dir = os.path.abspath('bsa_cache/Skyrim')
-    resources_dir = os.path.join('resources/Skyrim')
 
 class TestSkyrimSEBsaExtract(_TestExtractMixin, TestCase):
     bsa_path = r"F:\GAMES\The Elder Scrolls V Skyrim Special Edition\Data\Skyrim - Interface.bsa"
     bsa_type = bsa_files.SkyrimSeBsa
-    extract_dir = os.path.abspath('bsa_cache/SkyrimSE')
-    resources_dir = os.path.join('resources/SkyrimSE')
+    game_folder = 'SkyrimSE'
     assets_to_extract = {u'strings\\skyrim_german.strings',
                          u'strings\\skyrim_english.ilstrings',
                          u'strings\\skyrim_italian.dlstrings',
@@ -233,11 +253,10 @@ class TestSkyrimSEBsa(TestOblivionBsa):
 class TestFallout4Ba2(_TestExtractMixin, TestCase):
     bsa_path = r"F:\GAMES\FALLOUT 4\Data\Fallout4 - Interface.ba2"
     bsa_type = bsa_files.Fallout4Ba2
+    game_folder = 'Fallout4'
     assets_to_extract = {u'Strings\\Fallout4_ja.DLSTRINGS',
                          u'Strings\\Fallout4_ja.ILSTRINGS',
                          u'Strings\\Fallout4_ja.STRINGS',}
-    extract_dir = os.path.abspath('bsa_cache/Fallout4')
-    resources_dir = os.path.join('resources/Fallout4')
 
     def test___init__(self):
         bsa = self.bsa_type(self.bsa_path, names_only=False, load_cache=True)
