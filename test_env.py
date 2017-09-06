@@ -28,7 +28,17 @@ import win32gui
 
 import pywintypes
 
+# wx.IconFromLocation(wx.IconLocation(r"C:\__\Mozilla Firefox\firefox.exe"))
+import sys
+
+def sys_encode(path):
+    sys_encoded_path = path.encode(sys.getfilesystemencoding())
+    #SHGetFileInfo doesn't work with Unix style paths
+    sys_encoded_path = sys_encoded_path.replace('/', '\\')
+    return sys_encoded_path
+
 class TestExtractIcon(TestCase):
+    # TODO: bundle some exe with icons and test that
 
     no_icons_exe = r"C:\__\Mozilla Firefox\plugin-container.exe"
     icons_exe = r"C:\__\Mozilla Firefox\firefox.exe"
@@ -51,10 +61,26 @@ class TestExtractIcon(TestCase):
             self.assertIsInstance(e, pywintypes.error)
 
     # win32gui.ExtractIconEx(target.s, iconIndex, numIcons)
+    # numIcons must be >= 1 - other values raise value error
+    # iconIndex must be -1 to get num of icons in the file or a number smaller
+    # than win32gui.ExtractIconEx(target.s, -1) - other values result in
+    # return value ([], [])
     get_non_existent_icon = partial(win32gui.ExtractIconEx, no_icons_exe)
 
+
+    def test_ExtractIcon_existent(self):
+        # NB: we should call DestroyIcon on returned handles !!!
+        self.assertTrue(win32gui.ExtractIcon(0, self.icons_exe, 0))
+        self.assertTrue(win32gui.ExtractIcon(0, self.icons_exe, 1))
+        self.assertTrue(win32gui.ExtractIcon(0, self.icons_exe, 2))
+        self.assertTrue(win32gui.ExtractIcon(0, self.icons_exe, 3))
+        self.assertTrue(win32gui.ExtractIcon(0, self.icons_exe, 4))
+        self.assertTrue(win32gui.ExtractIcon(0, self.icons_exe, 5))
+        # there are only 6 icons
+        self.assertFalse(win32gui.ExtractIcon(0, self.icons_exe, 6))
+
     def test_ExtractIconEx_numIcons(self):
-        # numIcons must be >= 1 - other values raise
+        # numIcons must be >= 1 - other values raise ValueError
         numIcons = 0
         self.assertRaises(ValueError, self.get_non_existent_icon, 1, numIcons)
         numIcons = -1
@@ -100,3 +126,33 @@ class TestExtractIcon(TestCase):
         # print win32gui.GetIconInfo(large[0])
         # print win32gui.GetIconInfo(small[0])
         # now god knows what those icons are...
+
+    def test_SHGetFileInfo(self):
+        from win32com.shell import shell, shellcon
+        flags = shellcon.SHGFI_ICONLOCATION | \
+                shellcon.SHGFI_SYSICONINDEX # | \
+                # shellcon.SHGFI_DISPLAYNAME | \
+        # flags = shellcon.SHGFI_SYSICONINDEX
+        def get_icon_info(path):
+            sys_encoded_path = sys_encode(path)
+            print shell.SHGetFileInfo(sys_encoded_path, 0, flags)
+        get_icon_info(r"C:\__\Mozilla Firefox\plugin-container.exe")
+        get_icon_info(r"C:\__\Mozilla Firefox\firefox.exe")
+        get_icon_info(r"C:\__\FLAC\flac.ico")
+        get_icon_info(
+            r"C:\Users\MrD\Desktop\Banquet_Louvre_Kylix_G133_by_Cage_Painter"
+            r".jpg")
+        get_icon_info(r"C:\Dropbox\Camera Uploads\2017-04-23 03.30.42.jpg")
+
+    def test_SHGetFileInfo2(self):
+        from win32com.shell import shell, shellcon
+        flags = shellcon.SHGFI_USEFILEATTRIBUTES | shellcon.SHGFI_SYSICONINDEX
+        FILE_ATTRIBUTE_NORMAL = 128
+        def get_icon_info(path):
+            sys_encoded_path = sys_encode(path)
+            print shell.SHGetFileInfo(sys_encoded_path, FILE_ATTRIBUTE_NORMAL, flags)
+        get_icon_info(r".exe")
+        get_icon_info(r".exe")
+        get_icon_info(r".ico")
+        get_icon_info(r".jpg")
+        get_icon_info(r"C:\Dropbox\Camera Uploads\2017-04-23 03.30.42.jpg")
