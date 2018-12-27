@@ -183,7 +183,7 @@ class TestCollectFiles(unittest.TestCase):
 
     def runTest(self):
         test_chain = MimicChainMap()
-        expected = [{'0': {'example_folder': '', 'example.plugin': ''}}]
+        expected = [{'0': {'example_folder': '', 'example.plugin': 'example.plugin'}}]
         boop._collect_files(self.file_list, test_chain)
         self.assertEqual(test_chain.maps, expected)
 
@@ -471,7 +471,7 @@ class TestInstaller(unittest.TestCase):
         install.send(None)
         self.assertEqual(install._flag_states.maps, [{}])
         self.assertEqual(install._collected_files.maps,
-                         [{'0': {'test.plugin': ''}}, {}])
+                         [{'0': {'test.plugin': 'test.plugin'}}, {}])
 
         # simulate loops with next()
         first_step = next(install)
@@ -510,7 +510,7 @@ class TestInstaller(unittest.TestCase):
                          [{'option_02': 'selected'}, {}])
         self.assertEqual(install._collected_files.maps,
                          [{'0': {'option_03': ''}},
-                          {'0': {'test.plugin': ''}},
+                          {'0': {'test.plugin': 'test.plugin'}},
                           {}])
         self.assertEqual(second_step['name'], 'Second Step 02')
         group0 = second_step['groups'][0]
@@ -530,7 +530,7 @@ class TestInstaller(unittest.TestCase):
         back_step = next(install)
         self.assertEqual(install._flag_states.maps, [{}])
         self.assertEqual(install._collected_files.maps,
-                         [{'0': {'test.plugin': ''}}, {}])
+                         [{'0': {'test.plugin': 'test.plugin'}}, {}])
         self.assertEqual(back_step['name'], 'First Step')
         group0 = back_step['groups'][0]
         self.assertEqual(group0['name'], 'First Option:')
@@ -565,7 +565,7 @@ class TestInstaller(unittest.TestCase):
                          [{'option_01': 'selected'}, {}])
         self.assertEqual(install._collected_files.maps,
                          [{'0': {'option_03': ''}},
-                          {'0': {'test.plugin': ''}},
+                          {'0': {'test.plugin': 'test.plugin'}},
                           {}])
         self.assertEqual(new_sec_step['name'], 'Second Step 01')
         group0 = new_sec_step['groups'][0]
@@ -594,7 +594,7 @@ class TestInstaller(unittest.TestCase):
                           {}])
         self.assertEqual(install._collected_files.maps,
                          [{}, {'0': {'option_03': ''}},
-                          {'0': {'test.plugin': ''}}, {}])
+                          {'0': {'test.plugin': 'test.plugin'}}, {}])
         self.assertEqual(third_step['name'], 'Third Step')
         group0 = third_step['groups'][0]
         self.assertEqual(group0['name'], 'First Option:')
@@ -617,12 +617,12 @@ class TestInstaller(unittest.TestCase):
                           {'option_01': 'selected'},
                           {}])
         self.assertEqual(install._collected_files.maps,
-                         [{'0': {'option_21': ''}},
-                          {'0': {'option_11': ''}},
+                         [{'0': {'option_21': 'option_21'}},
+                          {'0': {'option_11': 'option_11'}},
                           {},
                           {},
                           {'0': {'option_03': ''}},
-                          {'0': {'test.plugin': ''}},
+                          {'0': {'test.plugin': 'test.plugin'}},
                           {}])
         self.assertEqual(install.flag_states,
                          {'option_01': 'selected',
@@ -630,6 +630,6 @@ class TestInstaller(unittest.TestCase):
                           'option_21': 'selected'})
         self.assertEqual(install.collected_files,
                          {'option_03': '',
-                          'option_11': '',
-                          'option_21': '',
-                          'test.plugin': ''})
+                          'option_11': 'option_11',
+                          'option_21': 'option_21',
+                          'test.plugin': 'test.plugin'})
