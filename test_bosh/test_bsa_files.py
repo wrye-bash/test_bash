@@ -175,6 +175,16 @@ class TestOblivionBsa(TestCase):
         for file_name, expected_hash in self.hashes:
             assert calculate_hash(file_name) == expected_hash
 
+    def test_undo_alterations(self):
+        # TODO This is hideous, we really have to make some custom BSAs instead
+        # Will modify the textures BSA of whoever is running this test :(
+        path = r'F:\GAMES\TESIV\Oblivion\Data\Oblivion - Textures - ' \
+               r'Compressed.bsa'
+        texture_bsa = bsa_files.OblivionBsa(path, load_cache=True,
+                                            names_only=False)
+        texture_bsa.undo_alterations()
+        assert texture_bsa.abs_path.crc == 0xC768066C
+
 class TestHeartOfTheDead(TestOblivionBsa):
     bsa_path = r'F:\GAMES\TESIV\Oblivion\Data\HeartOftheDead.bsa'
     dict_file = HodBsa
