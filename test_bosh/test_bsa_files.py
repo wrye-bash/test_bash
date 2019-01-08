@@ -128,6 +128,29 @@ class TestOblivionBsa(TestCase):
     dict_file = Oblivion_Misc_bsa
     bsa_type = bsa_files.OblivionBsa
     file_rec = ob_rec
+    # Hash values from Oblivion - used for testing calculate_hash
+    # Dumped using BSArch from Oblivion GOTY Edition on Steam
+    # A folder is always the place where the file below it came from
+    hashes = [(ur'textures\characters\darkelf', 0x25577CD741B6C66),
+              (ur'headdarkelff30.dds', 0x5D94602A680EB3B0),
+              (ur'textures\architecture\castleinterior', 0xA49973E74246F72),
+              (ur'castlestoneborder01.dds', 0x3F09D69B6313B0B1),
+              (ur'textures\menus80\alchemy', 0x432367574186D79),
+              (ur'alchemy (zoom).txt', 0x35A54934610E6D29),
+              (ur'meshes\armor\thief\f', 0x1EB279056D145C66),
+              (ur'cuirass.nif', 0x0A9125A06307F373),
+              (ur'meshes\clothes\amulet', 0xAF1AED2B6D156574),
+              (ur'amuletofkings.nif', 0x1852EA03610DE773),
+              (ur'meshes\creatures\spriggan\idleanims', 0xB38049296D236D73),
+              (ur'getupfaceup.kf', 0x0C113DB0670B75F0),
+              (ur'meshes\creatures\flameatronach', 0xB6D2FE3A6D1E6368),
+              (ur'backward.kf', 0x06EC35BC620872E4),
+              (ur'meshes\creatures\ogre\idleanims', 0xC2E1A4936D1F6D73),
+              (ur'check.kf', 0x1779FDE6630563EB),
+              (ur'sound\fx\fst\snow', 0xB02B1B5A73116F77),
+              (ur'fst_snow_01.wav', 0xD64F075CE60B3031),
+              (ur'sound\fx\npc\imp\injured', 0xA1058BCD73186564),
+              (ur'npc_imp_injured_01.wav', 0x24C6193BEE123031)]
 
     def test___init__(self):
         bsa = self.bsa_type(self.bsa_path, names_only=False, load_cache=True)
@@ -146,6 +169,11 @@ class TestOblivionBsa(TestCase):
         bsa = self.bsa_type(self.bsa_path, names_only=True, load_cache=True)
         assert bsa._filenames == list(
             itertools.chain.from_iterable(self.dict_file.values()))
+
+    def test_calculate_hash(self):
+        calculate_hash = bsa_files.OblivionBsa.calculate_hash
+        for file_name, expected_hash in self.hashes:
+            assert calculate_hash(file_name) == expected_hash
 
 class TestHeartOfTheDead(TestOblivionBsa):
     bsa_path = r'F:\GAMES\TESIV\Oblivion\Data\HeartOftheDead.bsa'
