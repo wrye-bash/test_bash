@@ -17,7 +17,7 @@
 #  along with Wrye Bash; if not, write to the Free Software Foundation,
 #  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
-#  Wrye Bash copyright (C) 2005-2009 Wrye, 2010-2015 Wrye Bash Team
+#  Wrye Bash copyright (C) 2005-2009 Wrye, 2010-2021 Wrye Bash Team
 #  https://github.com/wrye-bash
 #
 # =============================================================================
@@ -31,8 +31,8 @@ import pywintypes
 # wx.IconFromLocation(wx.IconLocation(r"C:\__\Mozilla Firefox\firefox.exe"))
 import sys
 
-def sys_encode(path):
-    sys_encoded_path = path.encode(sys.getfilesystemencoding())
+def sys_encode(str_path):
+    sys_encoded_path = str_path.encode(sys.getfilesystemencoding())
     #SHGetFileInfo doesn't work with Unix style paths
     sys_encoded_path = sys_encoded_path.replace('/', '\\')
     return sys_encoded_path
@@ -66,8 +66,6 @@ class TestExtractIcon(TestCase):
     # than win32gui.ExtractIconEx(target.s, -1) - other values result in
     # return value ([], [])
     get_non_existent_icon = partial(win32gui.ExtractIconEx, no_icons_exe)
-
-
     def test_ExtractIcon_existent(self):
         # NB: we should call DestroyIcon on returned handles !!!
         self.assertTrue(win32gui.ExtractIcon(0, self.icons_exe, 0))
@@ -129,13 +127,13 @@ class TestExtractIcon(TestCase):
 
     def test_SHGetFileInfo(self):
         from win32com.shell import shell, shellcon
-        flags = shellcon.SHGFI_ICONLOCATION | \
+        shellcon_flags = shellcon.SHGFI_ICONLOCATION | \
                 shellcon.SHGFI_SYSICONINDEX # | \
                 # shellcon.SHGFI_DISPLAYNAME | \
-        # flags = shellcon.SHGFI_SYSICONINDEX
-        def get_icon_info(path):
-            sys_encoded_path = sys_encode(path)
-            print shell.SHGetFileInfo(sys_encoded_path, 0, flags)
+        # shellcon_flags = shellcon.SHGFI_SYSICONINDEX
+        def get_icon_info(str_path):
+            sys_encoded_path = sys_encode(str_path)
+            print shell.SHGetFileInfo(sys_encoded_path, 0, shellcon_flags)
         get_icon_info(r"C:\__\Mozilla Firefox\plugin-container.exe")
         get_icon_info(r"C:\__\Mozilla Firefox\firefox.exe")
         get_icon_info(r"C:\__\FLAC\flac.ico")
@@ -146,11 +144,12 @@ class TestExtractIcon(TestCase):
 
     def test_SHGetFileInfo2(self):
         from win32com.shell import shell, shellcon
-        flags = shellcon.SHGFI_USEFILEATTRIBUTES | shellcon.SHGFI_SYSICONINDEX
+        shellcon_flags = shellcon.SHGFI_USEFILEATTRIBUTES | \
+                         shellcon.SHGFI_SYSICONINDEX
         FILE_ATTRIBUTE_NORMAL = 128
-        def get_icon_info(path):
-            sys_encoded_path = sys_encode(path)
-            print shell.SHGetFileInfo(sys_encoded_path, FILE_ATTRIBUTE_NORMAL, flags)
+        def get_icon_info(str_path):
+            sys_encoded_path = sys_encode(str_path)
+            print shell.SHGetFileInfo(sys_encoded_path, FILE_ATTRIBUTE_NORMAL, shellcon_flags)
         get_icon_info(r".exe")
         get_icon_info(r".exe")
         get_icon_info(r".ico")

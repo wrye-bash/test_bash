@@ -17,7 +17,7 @@
 #  along with Wrye Bash; if not, write to the Free Software Foundation,
 #  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
-#  Wrye Bash copyright (C) 2005-2009 Wrye, 2010-2015 Wrye Bash Team
+#  Wrye Bash copyright (C) 2005-2009 Wrye, 2010-2021 Wrye Bash Team
 #  https://github.com/wrye-bash
 #
 # =============================================================================
@@ -25,7 +25,7 @@ from collections import OrderedDict
 from unittest import TestCase
 
 from bolt import LowerDict, DefaultLowerDict
-# from bash.bosh.ini_files import _LowerOrderedDict # fails !
+# from bash.bosh.ini_files import LowerOrderedDict # fails !
 
 class TestLowerDict(TestCase):
 
@@ -172,4 +172,4 @@ class Test_LowerOrderedDict(TestLowerDict):
 
     def test_keys(self):
         a = self.dict_type([(u'sape', 4139), (u'guido', 4127), (u'jack', 4098)])
-        self.assertEqual(a.keys(), [u'sape', u'guido',u'jack'])
+        self.assertEqual(list(a), [u'sape', u'guido',u'jack'])

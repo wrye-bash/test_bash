@@ -10,7 +10,7 @@ from os.path import dirname, abspath, sep
 
 import itertools
 
-import struct
+import struct as _struct
 
 from test_bash.test_bosh.test_bsa_files_constants import \
     Skyrim_Interface_bsa, Oblivion_Misc_bsa, HeartOftheDead_Folder_Names, \
@@ -40,8 +40,8 @@ this_script_dir = get_script_dir()
 
 pjoin = os.path.join
 
-resources_root = pjoin(this_script_dir , ur'resources') #os.path.abspath('resources')
-cache_root = pjoin(this_script_dir , ur'bsa_cache')
+resources_root = pjoin(this_script_dir , r'resources') #os.path.abspath('resources')
+cache_root = pjoin(this_script_dir , r'bsa_cache')
 
 # Some random records from the bsas to test those are read ok in _load_bsa
 ob_rec = bsa_files.BSAFileRecord()
@@ -81,7 +81,7 @@ skyrimse_rec = (u'textures\\_byoh\\clutter', u'breadpeel01.dds', skyrimse_rec)
 
 class TestBSAHeader(TestCase):
     def test_load_header(self):
-        with open('F:\GAMES\TESIV\Oblivion\Data\Oblivion - Misc.bsa',
+        with open(r'F:\GAMES\TESIV\Oblivion\Data\Oblivion - Misc.bsa',
                   'rb') as bsa:
             h = bsa_files.OblivionBsaHeader()
             h.load_header(bsa)
@@ -97,8 +97,8 @@ class TestBSAHeader(TestCase):
 
 class TestBSAFolderRecord(TestCase):
     def test_load_folder_record(self):
-        with open('F:\GAMES\TESIV\Oblivion\Data\Oblivion - Misc.bsa',
-                  'rb') as bsa:
+        with open(r'F:\GAMES\TESIV\Oblivion\Data\Oblivion - Misc.bsa',
+                  u'rb') as bsa:
             folder_rec = bsa_files.BSAFolderRecord()
             bsa.seek(36) # the size of the header
             folder_rec.load_record(bsa)
@@ -131,33 +131,33 @@ class TestOblivionBsa(TestCase):
     # Hash values from Oblivion - used for testing calculate_hash
     # Dumped using BSArch from Oblivion GOTY Edition on Steam
     # A folder is always the place where the file below it came from
-    hashes = [(ur'textures\characters\darkelf', 0x25577CD741B6C66),
-              (ur'headdarkelff30.dds', 0x5D94602A680EB3B0),
-              (ur'textures\architecture\castleinterior', 0xA49973E74246F72),
-              (ur'castlestoneborder01.dds', 0x3F09D69B6313B0B1),
-              (ur'textures\menus80\alchemy', 0x432367574186D79),
-              (ur'alchemy (zoom).txt', 0x35A54934610E6D29),
-              (ur'meshes\armor\thief\f', 0x1EB279056D145C66),
-              (ur'cuirass.nif', 0x0A9125A06307F373),
-              (ur'meshes\clothes\amulet', 0xAF1AED2B6D156574),
-              (ur'amuletofkings.nif', 0x1852EA03610DE773),
-              (ur'meshes\creatures\spriggan\idleanims', 0xB38049296D236D73),
-              (ur'getupfaceup.kf', 0x0C113DB0670B75F0),
-              (ur'meshes\creatures\flameatronach', 0xB6D2FE3A6D1E6368),
-              (ur'backward.kf', 0x06EC35BC620872E4),
-              (ur'meshes\creatures\ogre\idleanims', 0xC2E1A4936D1F6D73),
-              (ur'check.kf', 0x1779FDE6630563EB),
-              (ur'sound\fx\fst\snow', 0xB02B1B5A73116F77),
-              (ur'fst_snow_01.wav', 0xD64F075CE60B3031),
-              (ur'sound\fx\npc\imp\injured', 0xA1058BCD73186564),
-              (ur'npc_imp_injured_01.wav', 0x24C6193BEE123031)]
+    hashes = [(r'textures\characters\darkelf', 0x25577CD741B6C66),
+              (r'headdarkelff30.dds', 0x5D94602A680EB3B0),
+              (r'textures\architecture\castleinterior', 0xA49973E74246F72),
+              (r'castlestoneborder01.dds', 0x3F09D69B6313B0B1),
+              (r'textures\menus80\alchemy', 0x432367574186D79),
+              (r'alchemy (zoom).txt', 0x35A54934610E6D29),
+              (r'meshes\armor\thief\f', 0x1EB279056D145C66),
+              (r'cuirass.nif', 0x0A9125A06307F373),
+              (r'meshes\clothes\amulet', 0xAF1AED2B6D156574),
+              (r'amuletofkings.nif', 0x1852EA03610DE773),
+              (r'meshes\creatures\spriggan\idleanims', 0xB38049296D236D73),
+              (r'getupfaceup.kf', 0x0C113DB0670B75F0),
+              (r'meshes\creatures\flameatronach', 0xB6D2FE3A6D1E6368),
+              (r'backward.kf', 0x06EC35BC620872E4),
+              (r'meshes\creatures\ogre\idleanims', 0xC2E1A4936D1F6D73),
+              (r'check.kf', 0x1779FDE6630563EB),
+              (r'sound\fx\fst\snow', 0xB02B1B5A73116F77),
+              (r'fst_snow_01.wav', 0xD64F075CE60B3031),
+              (r'sound\fx\npc\imp\injured', 0xA1058BCD73186564),
+              (r'npc_imp_injured_01.wav', 0x24C6193BEE123031)]
 
     def test___init__(self):
         bsa = self.bsa_type(self.bsa_path, names_only=False, load_cache=True)
         # pprint(bsa.bsa_folders)
         od = OrderedDict()
-        for k, v in bsa.bsa_folders.iteritems():
-            od[k] = (tuple(pjoin(k, a) for a in v.folder_assets.iterkeys()))
+        for k, v in bsa.bsa_folders.items():
+            od[k] = (tuple(pjoin(k, a) for a in v.folder_assets))
         # pprint(od)
         assert od == self.dict_file
         rec = bsa.bsa_folders[self.file_rec[0]].folder_assets[self.file_rec[1]]
@@ -193,11 +193,11 @@ class TestHeartOfTheDead(TestOblivionBsa):
 
     def test_load_bsa_light_folder_names(self):
         self.bsa_folders = OrderedDict()
-        with open(self.bsa_path, 'rb') as bsa:
+        with open(self.bsa_path, u'rb') as bsa:
             h = bsa_files.OblivionBsaHeader()
             h.load_header(bsa)
             folder_records = [] # we need those to parse the folder names
-            for __ in xrange(h.folder_count):
+            for __ in range(h.folder_count):
                 rec = bsa_files.BSAFolderRecord()
                 try:
                     rec.load_record(bsa)
@@ -207,10 +207,10 @@ class TestHeartOfTheDead(TestOblivionBsa):
             # load the file record block
             total_size = total_name_size = 0
             for folder_record in folder_records:
-                name_size = struct.unpack('B', bsa.read(1))[0]
+                name_size = _struct.unpack('B', bsa.read(1))[0]
                 folder_path = bsa_files._decode_path(
-                    struct.unpack('%ds' % (name_size - 1),
-                                  bsa.read(name_size - 1))[0])
+                    _struct.unpack(u'%ds' % (name_size - 1),
+                                   bsa.read(name_size - 1))[0])
                 bsa.read(1)
                 total_size += name_size + 1
                 total_name_size += name_size
@@ -226,7 +226,7 @@ class TestHeartOfTheDead(TestOblivionBsa):
         print total_name_size
         print total_size
         print sum(k.files_count for k in folder_records)
-        assert self.bsa_folders.keys() == self.folder_names
+        assert list(self.bsa_folders) == self.folder_names
 
 class TestMidasSpells(TestHeartOfTheDead):
     bsa_path = r'F:\GAMES\TESIV\Oblivion\Data\MidasSpells.bsa'
@@ -300,8 +300,8 @@ class TestFallout4Ba2(_TestExtractMixin, TestCase):
         bsa = self.bsa_type(self.bsa_path, names_only=False, load_cache=True)
         # pprint(bsa.bsa_folders)
         # od = OrderedDict()
-        # for k, v in bsa.bsa_folders.iteritems():
-        #     od[k] = (tuple(unicode(a) for a in v.assets.itervalues()))
+        # for k, v in bsa.bsa_folders.items():
+        #     od[k] = (tuple(unicode(a) for a in v.assets.values()))
         # pprint(od)
         # assert od == Skyrim_Interface_bsa
 
